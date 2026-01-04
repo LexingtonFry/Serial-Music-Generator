@@ -1,42 +1,35 @@
 name: Build Windows EXE
 
-# 触发条件：只要你上传代码，它就开始工作
 on: [push]
 
 jobs:
   build:
-    # 关键点：指定让 GitHub 用 Windows 系统来运行
     runs-on: windows-latest
 
     steps:
-    # 1. 把你的代码拉取下来
-    - uses: actions/checkout@v3
+    # === 修复点 1: 改为 v4 ===
+    - uses: actions/checkout@v4
 
-    # 2. 安装 Python 环境
+    # === 修复点 2: 改为 v5 ===
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
-        python-version: '3.11' # 用 3.11 比较稳
+        python-version: '3.11'
 
-    # 3. 安装依赖库 (把你的程序需要的库都写在这里)
     - name: Install dependencies
       run: |
-        pip install music21 pyinstaller tkinterdnd2-universal
-        # 注意：Tkinter 是 Python 自带的，不需要 install
-        # 如果你有其他库，加在上面这行后面
+        pip install music21 pyinstaller
+        # 如果你用了其他库，加在这里
 
-    # 4. 开始打包 (关键命令)
     - name: Build with PyInstaller
       run: |
-        # --onefile: 打包成单文件
-        # --windowed: 不显示黑框
-        # --name: 软件名字叫 SerialComposer
-        # music.py: 你的文件名 (如果你的文件名不一样，这里要改！)
+        # 确保这里的文件名 music.py 和你上传的一致
         pyinstaller --noconfirm --onefile --windowed --name "SerialComposer" music.py
 
-    # 5. 把生成好的 EXE 上传给你下载
+    # === 关键修复点: 改为 v4 ===
     - name: Upload EXE
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: My-Windows-App
         path: dist/*.exe
+        # v4 版本不再默认压缩，但下载时 GitHub 会自动帮你压成 zip
